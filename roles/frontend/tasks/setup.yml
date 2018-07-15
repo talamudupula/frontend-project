@@ -1,0 +1,39 @@
+- name: install base packages
+  apt:
+    package: npm
+    update_cache: yes
+- name: install nodejs
+  unarchive:
+    src: https://nodejs.org/dist/v4.8.6/node-v4.8.6-linux-x64.tar.xz
+    dest: /usr/local
+    remote_src: yes
+- name: Creates soft link
+  file:
+    src: "/usr/local/node-v4.8.6-linux-x64/bin/node"
+    dest: "/usr/local/bin/nodejs"
+    state: link
+- name: install frontend webservices
+  file:
+    path: /opt/apps/frontend/releases
+    state: directory
+    mode: 0755
+- name: Extract files 
+  unarchive:
+    src: https://github.com/udbc/front-end/archive/1.0.1.tar.gz
+    dest: /opt/apps/frontend/releases/
+    remote_src: yes
+- name: symlink
+  file:
+    src: /opt/apps/frontend/releases/front-end-1.0.1
+    dest: /opt/frontend
+    state: link
+- name: Install npm 
+  npm:
+    path: /opt/frontend
+- name: download services
+  get_url:
+    url: https://raw.githubusercontent.com/udbc/front-end/master/scripts/frontend
+    dest: /etc/init.d/frontend
+    owner: root
+    group: root
+    mode: 0755
